@@ -1,0 +1,11 @@
+.ipynb_checkpoints
+__pycache__/
+Untitled*.ipynb
+C/package/bin/
+C/package/fftw-3.3.10/
+C/package/include/
+C/package/lib/
+C/package/share/
+C/package/*.txt
+
+py/
