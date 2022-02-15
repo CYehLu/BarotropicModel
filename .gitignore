@@ -7,3 +7,4 @@ C/package/include/
 C/package/lib/
 C/package/share/
 C/package/*.txt
+py/test*.ipynb
