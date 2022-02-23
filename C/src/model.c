@@ -13,6 +13,8 @@ void _compute_rhs(int ny, int nx, double **psi, double dx, double dy, double bet
     double **jacob = jacobian(ny, nx, psi, *vort_tn, dx, dy);
     
     double **f = allocate_2darray(ny, nx);   // laplacian(rhs) = f
+    
+    #pragma omp parallel for default(none) shared(f, jacob, beta, dpsi_dx, ny, nx)
     for (int j = 0; j < ny; j++) {
         for (int i = 0; i < nx; i++) 
             f[j][i] = -jacob[j][i] - beta * dpsi_dx[j][i];
@@ -42,7 +44,7 @@ Fields barotropic(int ny, int nx, double **vort0, double dx, double dy, double d
     double **psi_tnp1 = allocate_2darray(ny, nx);   // psi(t_{n+1})
     double **psi_tnm1 = allocate_2darray(ny, nx);   // psi(t_{n-1})
      
-    _array2d_copy(ny, nx, psi_tn, fields.psi[0]);
+    array2d_copy(ny, nx, psi_tn, fields.psi[0]);
     
     // from time_step = 0 to 1: Euler's method
     printf("Step 1 / %d ...     \r", n_steps);
@@ -51,6 +53,7 @@ Fields barotropic(int ny, int nx, double **vort0, double dx, double dy, double d
     double **rhs = allocate_2darray(ny, nx);
     _compute_rhs(ny, nx, psi_tn, dx, dy, BETA, &rhs, &vort_tn);
     
+    #pragma omp parallel for default(none) shared(psi_tnp1, psi_tn, dt, rhs, ny, nx) 
     for (int j = 0; j < ny; j++) {
         for (int i = 0; i < nx; i++)
             psi_tnp1[j][i] = psi_tn[j][i] + dt * rhs[j][i];
@@ -69,6 +72,7 @@ Fields barotropic(int ny, int nx, double **vort0, double dx, double dy, double d
         
         _compute_rhs(ny, nx, psi_tn, dx, dy, BETA, &rhs, &vort_tn);
         
+        #pragma omp parallel for default(none) shared(psi_tnm1, psi_tn, psi_tnp1, rhs, dt, GAMMA, ny, nx)
         for (int j = 0; j < ny; j++) {
             for (int i = 0; i < nx; i++) 
                 leapfrog_asselin_filter(&(psi_tnm1[j][i]), &(psi_tn[j][i]), &(psi_tnp1[j][i]), rhs[j][i], dt, GAMMA);
@@ -77,8 +81,8 @@ Fields barotropic(int ny, int nx, double **vort0, double dx, double dy, double d
         // store data
         if ((t % store_dt) == 0) {
             store_idx++;
-            _array2d_copy(ny, nx, fields.psi[store_idx], psi_tn);
-            _array2d_copy(ny, nx, fields.vort[store_idx], vort_tn);
+            array2d_copy(ny, nx, fields.psi[store_idx], psi_tn);
+            array2d_copy(ny, nx, fields.vort[store_idx], vort_tn);
         }
     }
     printf("\n");

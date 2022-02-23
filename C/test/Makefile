@@ -5,7 +5,7 @@ lib_flags = -lfftw3 -lm
 extern_lib_path = ../package/lib/
 extern_inc_path = ../package/include/
 
-other_flags = -std=c99 -Wall -Wextra
+other_flags = -std=c99 -fopenmp -Wall -Wextra
 
 all: test_compute_rhs.out test_poisson.out test_model.out
 

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void _array2d_copy(int n0, int n1, double **dest, double **src) {
+void array2d_copy(int n0, int n1, double **dest, double **src) {
     /*
     Copy 2-d array from `src` to `dest`.
     `n0` and `n1` are the array dimension size.

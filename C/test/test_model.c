@@ -103,7 +103,6 @@ int main(void) {
     Fields res = barotropic(ny, nx, vort0, dx, dy, dt, store_dt, n_steps);
     int time_size = (n_steps-1)/store_dt + 1;
     
-    output_file(ny, nx, vort0, "vort0.dat");
     output_file3(time_size, ny, nx, res.vort, "vort.dat");
     output_file3(time_size, ny, nx, res.psi, "psi.dat");
     
